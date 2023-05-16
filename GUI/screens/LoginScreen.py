@@ -111,12 +111,13 @@ class LoginScreen(ctk.CTkFrame):
         if user is not None:
             self.userDto = user
             self.tkUser.fillFromDto(self.userDto)
-            admin = self.service.getAdminByUsernameAndPass(self.tkUser.username.get(), self.tkUser.password.get(), self.tkUser.admin.get())
-            self.upozorenje.set("Usa si")
-            if admin:
-                # self.creatAdminPanel()
-                self.upozorenje.set("Usa  admin")
+            if self.tkUser.admin:
+                admin = self.service.getAdminByUsernameAndPass(self.tkUser.username.get(), self.tkUser.password.get(), True)
+                if admin is not None:
+                    self.upozorenje.set("Success, you are logged in as admin")
 
+                else:
+                    self.upozorenje.set("Success, you are logged in")
         else:
             self.upozorenje.set("Error, Incorrect username or password.")
 
