@@ -105,12 +105,21 @@ class LoginScreen(ctk.CTkFrame):
     #         self.btnToggleVisibility.config(image=self.tkimgShow)
 
     def login(self):
-        self.userdto = self.service.getUser(self.tkUser.username.get(), self.tkUser.password.get())
-        if self.userdto is not None:
+        # self.prozor1.grid_remove()
+        # self.creatAdminPanel()
+        user = self.service.getUser(self.tkUser.username.get(), self.tkUser.password.get())
+        if user is not None:
+            self.userDto = user
             self.tkUser.fillFromDto(self.userDto)
-            admin = self.service.getAdminByUsernameAndPass(self.tkUser.username.get(), self.tkUser.password.get(), self.tkUser.admin)
-            if admin is True:
-                self.creatAdminPanel()
+            admin = self.service.getAdminByUsernameAndPass(self.tkUser.username.get(), self.tkUser.password.get(), self.tkUser.admin.get())
+            self.upozorenje.set("Usa si")
+            if admin:
+                # self.creatAdminPanel()
+                self.upozorenje.set("Usa  admin")
+
+        else:
+            self.upozorenje.set("Error, Incorrect username or password.")
+
 
 
 
@@ -137,20 +146,33 @@ class LoginScreen(ctk.CTkFrame):
         self.login()
 
     def creatAdminPanel(self):
-        adminPanel = ttk.LabelFrame(self, text="Admin panel")
-        self.setComponent(adminPanel, 3, 0)
 
-        self.lbUsers = tk.Listbox(adminPanel)
-        self.lbUsers.grid(row=0, column=0, pady=5, padx=5, rowspan=5)
-        self.lbUsers.bind("<Double-1>", self.selectUserFromList())
+        self.adminProzor = ctk.CTkFrame(self)
+        self.setComponent(self.adminProzor, 0, 0)
+
+        self.adminPanel = ctk.CTkLabel(self.adminProzor, text="Admin panel")
+        self.setComponent(self.adminPanel, 0, 0)
+
+
+        # self.lbUsers = ctk.CTkComboBox(self.adminPanel)
+        # self.lbUsers.grid(row=0, column=0, pady=5, padx=5, rowspan=5)
+        # self.lbUsers.bind("<Double-1>", self.selectUserFromList())
 
         self.fetchAndSetUserList()
 
-        name = ttk.Entry(adminPanel, textvariable=self.tkUser.name)
-        name.grid(row=0, column=1, padx=5, pady=5, sticky=tk.EW, columnspan=3)
+        lblName = ctk.CTkLabel(self.adminPanel, text="Name:")
+        self.setComponent(self.adminPanel, 0, 1)
 
-        surname = ttk.Entry(adminPanel, textvariable=self.tkUser.surname)
+        name = ctk.CTkEntry(self.adminPanel, textvariable=self.tkUser.name)
+        name.grid(row=0, column=2, padx=5, pady=5, sticky=tk.EW, columnspan=4)
+
+        surname = ttk.Entry(self.adminPanel, textvariable=self.tkUser.surname)
         surname.grid(row=1, column=1, padx=5, pady=5, sticky=tk.EW, columnspan=3)
+
+        UsernameLbl = ctk.CTkLabel(self.prozor1, text="Username:")
+        UsernameLbl.grid(row=1, column=0, padx=5, pady=5)
+
+        username = ctk.CTkEntry(self.a)
 
         password = ttk.Entry(adminPanel, textvariable=self.tkUser.password)
         password.grid(row=2, column=1, padx=5, pady=5, sticky=tk.EW, columnspan=3)

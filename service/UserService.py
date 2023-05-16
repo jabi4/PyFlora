@@ -40,8 +40,8 @@ class UserService:
         self.addUser("Ana", "Anic", "aanic01", "3333", False)
         self.addUser("Frane", "Maric", "fmaric01", "4444", False)
 
-    def getUser(self, dto: UserDto):
-        query = f"SELECT * FROM {self.TABLE_NAME} where username='{dto.username}' AND password='{dto.password}'; "
+    def getUser(self, username, password):
+        query = f"SELECT * FROM {self.TABLE_NAME} where username='{username}' AND password='{password}'; "
         result = DBUtils.dohvatiPodatke(self.connection, query, one=True)
         if result is not None:
             userDto: UserDto = UserDto.creataFromResult(result)
@@ -50,8 +50,8 @@ class UserService:
         else:
             return None
 
-    def getAdminByUsernameAndPass(self, dto: UserDto):
-        query = f"SELECT * FROM {self.TABLE_NAME} where username='{dto.username}' and password='{dto.password}' and isAdmin={dto.isAdmin}; "
+    def getAdminByUsernameAndPass(self, username, password, isAdmin):
+        query = f"SELECT * FROM {self.TABLE_NAME} where username='{username}' and password='{password}' and admin={isAdmin}; "
         result = DBUtils.dohvatiPodatke(self.connection, query, one=True)
         if result is not None:
             userDto: UserDto = UserDto.creataFromResult(result)
