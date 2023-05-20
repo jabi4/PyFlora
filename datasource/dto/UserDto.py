@@ -19,7 +19,7 @@ class UserDto:
         return f"{self.name} {self.surname}"
 
     @staticmethod
-    def creataFromResult(result: tuple):
+    def createFromResult(result: tuple):
         userDto = UserDto()
         userDto.id = result[0]
         userDto.name = result[1]

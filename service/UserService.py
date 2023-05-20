@@ -44,7 +44,7 @@ class UserService:
         query = f"SELECT * FROM {self.TABLE_NAME} where username='{username}' AND password='{password}'; "
         result = DBUtils.dohvatiPodatke(self.connection, query, one=True)
         if result is not None:
-            userDto: UserDto = UserDto.creataFromResult(result)
+            userDto: UserDto = UserDto.createFromResult(result)
             print(userDto)
             return userDto
         else:
@@ -54,7 +54,7 @@ class UserService:
         query = f"SELECT * FROM {self.TABLE_NAME} where username='{username}' and password='{password}' and admin={isAdmin}; "
         result = DBUtils.dohvatiPodatke(self.connection, query, one=True)
         if result is not None:
-            userDto: UserDto = UserDto.creataFromResult(result)
+            userDto: UserDto = UserDto.createFromResult(result)
             print(userDto)
             return userDto
         else:
@@ -66,14 +66,12 @@ class UserService:
         userList = []
         if result is not None:
             for user in result:
-                userDto = UserDto.creataFromResult(user)
-                if userDto.isAdmin == True:
-                    continue
-        #             ne zelim da mi provjerava admina i da ga imam u listi
-                else:
+                userDto = UserDto.createFromResult(user)
+                if not userDto.isAdmin:
+                    print(userDto)
                     userList.append(userDto)
-        else:
-            return None
+            return userList
+
 
     def updateUser(self, dto: UserDto):
         query = f"""

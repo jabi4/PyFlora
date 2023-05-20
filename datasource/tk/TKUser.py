@@ -15,11 +15,12 @@ class TkUser:
         self.id = userDto.id
         self.name.set(userDto.name)
         self.surname.set(userDto.surname)
+        self.username.set(userDto.username)
         self.password.set(userDto.password)
         self.admin.set(userDto.isAdmin)
 
     def clear(self):
-        self.ide = None
+        self.id = None
         self.name.set("")
         self.surname.set("")
         self.username.set("")
