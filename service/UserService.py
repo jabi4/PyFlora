@@ -18,7 +18,7 @@ class UserService:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name VARCHAR(30) NOT NULL,
                 surname VARCHAR(30) NOT NULL,
-                username VARCHAR(30) NOT NULL UNIQUE,
+                username VARCHAR(30) TEXT NOT NULL UNIQUE,
                 password VARCHAR(10) NOT NULL,
                 admin BOOLEAN NOT NULL     
             );
@@ -37,7 +37,7 @@ class UserService:
         self.addUser("jasmin", "bilic", "jbilic01", "0000", True)
         self.addUser("Pero", "Peric", "pperic01", "1111", False)
         self.addUser("Ivo", "ivic", "iivic01", "2222", False)
-        self.addUser("Ana", "Anic", "aanic01", "3333", False)
+        self.addUser("Marko", "Anic", "manic01", "3333", False)
         self.addUser("Frane", "Maric", "fmaric01", "4444", False)
 
     def getUser(self, username, password):
@@ -73,17 +73,32 @@ class UserService:
             return userList
 
 
-    def updateUser(self, dto: UserDto):
-        query = f"""
-            UPDATE {self.TABLE_NAME}
-            SET name='{dto.name}', surname='{dto.surname}', username='{dto.username}', password='{dto.password}', admin={dto.isAdmin}
-            WHERE id={dto.id};
-        """
+    def addOrUpdateUser(self, dto: UserDto):
+        configuration = self._ifConfigExists(dto.username)
+        if configuration is None:
+            query = f"""
+                INSERT INTO {self.TABLE_NAME}
+                (name, surname, username, password, admin)
+                VALUES 
+                ('{dto.name}', '{dto.surname}', '{dto.username}', '{dto.password}', {dto.isAdmin});
+                
+            """
+        else:
+            query = f"""
+                UPDATE {self.TABLE_NAME}
+                SET name='{dto.name}', surname='{dto.surname}', username='{dto.username}', password='{dto.password}', admin={dto.isAdmin}
+                WHERE username='{dto.username}';              
+            
+            """
         DBUtils.izvrsiIZapisi(self.connection, query)
 
     def deleteUser(self, id):
         query = f"DELETE FROM {self.TABLE_NAME} where id={id};"
         DBUtils.izvrsiIZapisi(self.connection, query)
+
+    def _ifConfigExists(self, username):
+        query = f"SELECT * FROM {self.TABLE_NAME} WHERE username = '{username}';"
+        return DBUtils.dohvatiPodatke(self.connection, query, one=True)
 
 
 

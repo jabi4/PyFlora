@@ -35,6 +35,7 @@ class UserDto:
         userDto.id = tkModel.id
         userDto.name = tkModel.name.get()
         userDto.surname = tkModel.surname.get()
+        userDto.username = tkModel.username.get()
         userDto.password = tkModel.password.get()
         userDto.isAdmin = tkModel.admin.get()
         return userDto

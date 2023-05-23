@@ -96,13 +96,6 @@ class LoginScreen(ctk.CTkFrame):
             self.ePassword.configure(show="*")
             self.btnToggleVisibility.configure(image=self.tkimgHide)
             self.toggleVisibility = False
-    # def togglePassVisibility(self):
-    #     if self.ePassword("show") == "":
-    #         self.ePassword.config(show="*")
-    #         self.btnToggleVisibility.config(image=self.tkimgHide)
-    #     else:
-    #         self.ePassword.config(show="")
-    #         self.btnToggleVisibility.config(image=self.tkimgShow)
 
     def login(self):
         # self.prozor1.grid_remove()
@@ -122,28 +115,6 @@ class LoginScreen(ctk.CTkFrame):
                     self.upozorenje.set("Success, you are logged in")
         else:
             self.upozorenje.set("Error, Incorrect username or password.")
-
-
-
-
-    # def login(self):
-    #     username = self.tkUser.username.set(self.userDto.username)
-    #     password = self.tkUser.password.set(self.userDto.password)
-    #     isAdmin = self.tkUser.admin
-    #
-    #
-    #     if not username or not password:
-    #         self.upozorenje.set("Error, Please enter a username and password.")
-    #
-    #     else:
-    #         if isAdmin:
-    #             userDto = self.service.getAdminByUsernameAndPass(self.tkUser.username.get(), self.tkUser.password.get(), self.tkUser.admin.get())
-    #         else:
-    #             userDto = self.service.getUser(self.tkUser.password.get(), self.tkUser.username.get())
-    #
-    #             if userDto is None:
-    #                 self.upozorenje.set("Success Welcome!")
-    #                 self.prozor1.grid_remove
 
     def loginEnter(self, event):
         self.login()
@@ -182,12 +153,6 @@ class LoginScreen(ctk.CTkFrame):
         self.lbUsers.bind("<Double-1>", self.selectUserFromList)
 
         self.fetchAndSetUserList()
-
-        # self.combobox = ctk.CTkComboBox(self.editUserFrame)
-        # self.combobox.grid(row=0, column=0, pady=5, padx=5, rowspan=5)
-        # self.combobox.bind("<<ComboboxSelected>>", self.selectUserFromList)
-
-        # self.fetchAndSetUserList()
 
         lblName = ctk.CTkLabel(self.editUserFrame, text="Name:")
         lblName.grid(row=1, column=1, pady=5, padx=5, sticky=E)
@@ -234,7 +199,7 @@ class LoginScreen(ctk.CTkFrame):
         btnClose.grid(row=6, column=2, padx=5, pady=5)
 
         btnBack = ctk.CTkButton(self.editUserFrame, text="", image=self.tkimgBack, command=self.btnBack, height=5, width=5)
-        btnBack.grid(row=6, column=3, padx=10, pady=10)
+        btnBack.grid(row=6, column=3, padx=15, pady=15)
 
     def mainManu(self):
         pass
@@ -242,7 +207,7 @@ class LoginScreen(ctk.CTkFrame):
 
     def btnSaveClicked(self):
         userDto = UserDto.createFromTkModel(self.tkUser)
-        self.service.updateUser(userDto)
+        self.service.addOrUpdateUser(userDto)
         self.fetchAndSetUserList()
 
     def btnCancelClicked(self):
@@ -256,9 +221,6 @@ class LoginScreen(ctk.CTkFrame):
         self.service.deleteUser(self.tkUser.id)
         self.tkUser.clear()
         self.fetchAndSetUserList()
-
-
-
 
     def fetchAndSetUserList(self):
         self.userList = self.service.getAllUsers()
