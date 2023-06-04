@@ -1,5 +1,3 @@
-import tkinter
-from tkinter import Frame
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
@@ -8,8 +6,10 @@ from time import sleep as delay
 from PIL import Image, ImageTk
 import customtkinter as ctk
 from service.UserService import UserService
+from service.PlantService import PlantService
 from datasource.tk.TKUser import TkUser
 from datasource.dto.UserDto import UserDto
+from GUI.screens.PlantsScreen import PlantsScreen
 # root - parent
 # frame - parent
 # labelframe - parent
@@ -19,15 +19,15 @@ ctk.set_default_color_theme("green")
 
 class LoginScreen(ctk.CTkFrame):
 
-    def __init__(self, mainWindow, service: UserService):
-        super().__init__(master=mainWindow)
-        self.place(relx=0.5, rely=0.5, anchor=CENTER)
+    def __init__(self, parent, service: UserService, plantService: PlantService):
+        super().__init__(master=parent)
+        self.grid()
         self.service = service
+        self.plantService = plantService
         self.tkUser = TkUser()
         self.userDto = UserDto()
         self['relief'] = tk.RAISED
-        self['borderwidth'] = 5
-        self.toggleProzor2 = False
+        self['borderwidth'] = 15
         self.toggleVisibility = False
         self.loginScreen()
 
@@ -37,11 +37,6 @@ class LoginScreen(ctk.CTkFrame):
             component.grid(row=row, column=column, pady=5, padx=5)
         else:
             component.grid(row=row, column=column, pady=5, padx=5, sticky=sticky, columnspan=columnspan)
-
-    # def createHeader(self):
-    #     header = ctk.CTkLabel(self, text="Prijava", font=("Roboto", 24))
-    #     self.setComponent(header, 0, 0)
-
 
     def loginScreen(self):
 
@@ -80,8 +75,10 @@ class LoginScreen(ctk.CTkFrame):
         btnLogin = ctk.CTkButton(self.loginWindow, text="Login", command=self.login)
         btnLogin.grid(row=3, column=1, pady=5, padx=5)
 
-        rememberMe = ctk.CTkCheckBox(self.loginWindow, text="Remember Me")
+        self.rememberMeVar = tk.IntVar()
+        rememberMe = ctk.CTkCheckBox(self.loginWindow, text="Remember Me", variable=self.rememberMeVar)
         rememberMe.grid(row=3, column=2, pady=5, padx=5)
+
 
         self.upozorenje = tk.StringVar()
         self.lblUpozorenje = ctk.CTkLabel(self.loginWindow, textvariable=self.upozorenje)
@@ -96,6 +93,14 @@ class LoginScreen(ctk.CTkFrame):
             self.ePassword.configure(show="*")
             self.btnToggleVisibility.configure(image=self.tkimgHide)
             self.toggleVisibility = False
+
+    # logika za remeber me probaj to sredit
+    # def rememberMe(self):
+    #     remeber = self.service.getUser(self.tkUser.username.get(), self.tkUser.password.get())
+    #     if self.rememberMeVar.get() == 1:
+
+
+
 
     def login(self):
         # self.prozor1.grid_remove()
@@ -112,7 +117,9 @@ class LoginScreen(ctk.CTkFrame):
                     self.adminMenuFrame()
 
                 else:
-                    self.upozorenje.set("Success, you are logged in")
+                    self.loginWindow.grid_remove()
+                    self.mainManu()
+
         else:
             self.upozorenje.set("Error, Incorrect username or password.")
 
@@ -137,8 +144,6 @@ class LoginScreen(ctk.CTkFrame):
         self.btnAdmin.grid(row=1, column=0, padx=15, pady=15)
 
 
-
-
     def editUser(self):
 
         self.userList = []  # Inicijalizacija userList
@@ -146,10 +151,10 @@ class LoginScreen(ctk.CTkFrame):
 
         self.amFrame.grid_remove()
         self.editUserFrame = ctk.CTkFrame(self)
-        self.editUserFrame.grid(row=0, column=0, pady=15, padx=15)
+        self.editUserFrame.grid(row=0, column=0, pady=5, padx=5)
 
         self.lbUsers = tk.Listbox(self.editUserFrame, bg="#333333", font=("Roboto", 12), fg="white", selectbackground="#106A43")
-        self.lbUsers.grid(row=0, column=0, pady=10, padx=10, rowspan=6)
+        self.lbUsers.grid(row=0, column=0, pady=15, padx=15, rowspan=6)
         self.lbUsers.bind("<Double-1>", self.selectUserFromList)
 
         self.fetchAndSetUserList()
@@ -199,11 +204,11 @@ class LoginScreen(ctk.CTkFrame):
         btnClose.grid(row=6, column=2, padx=5, pady=5)
 
         btnBack = ctk.CTkButton(self.editUserFrame, text="", image=self.tkimgBack, command=self.btnBack, height=5, width=5)
-        btnBack.grid(row=6, column=3, padx=15, pady=15)
+        btnBack.grid(row=6, column=3, padx=10, pady=10)
 
     def mainManu(self):
-        pass
-    #glavni prozor s biljkama i uredenjem oko njih
+        self.menu = PlantsScreen(self, self.plantService)
+        self.menu.grid(row=0, column=0, padx=5, pady=5)
 
     def btnSaveClicked(self):
         userDto = UserDto.createFromTkModel(self.tkUser)
@@ -239,17 +244,3 @@ class LoginScreen(ctk.CTkFrame):
         userDto: UserDto = self.userList[selectedIndex[0]]
         print(userDto)
         self.tkUser.fillFromDto(userDto)
-
-    def addUser(self):
-        pass
-
-
-
-
-
-
-
-
-
-
-
