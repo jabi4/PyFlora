@@ -20,12 +20,14 @@ class MainScreen(ctk.CTkFrame):
         self.userInfoDisplay()
 
 
+
     def createLoginScreen(self):
         logScreen = LoginScreen(self, self.service, self.plantService)
         logScreen.grid()
 
 
     def userInfoDisplay(self):
+
 
         self.userInfo = ctk.CTkFrame(self.master)
         self.userInfo.grid(row=0, column=0, pady=5, padx=5)

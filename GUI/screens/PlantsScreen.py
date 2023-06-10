@@ -8,6 +8,8 @@ from datasource.dto.PlantDto import PlantDTO
 from datasource.tk.TkPlants import TkPlant
 from datasource.tk.TkValues import TkValues
 import random
+import tkinter.filedialog as filedialog
+
 
 
 
@@ -22,21 +24,6 @@ class PlantsScreen(ctk.CTkFrame):
         self.simNumbers = TkValues()
         self.populatePlantsTab()
         self.populatePotsTab()
-
-
-    # def tabs(self):
-    #
-    #     self.tabs = ctk.CTkTabview(self)
-    #     self.tabs.grid(row=1, column=1, padx=5, pady=5)
-    #
-    #     self.tabPlants = ctk.CTkFrame(self.tabs)
-    #     self.tabPots = ctk.CTkFrame(self.tabs)
-    #     self.tabEdits = ctk.CTkFrame(self.tabs)
-    #
-    #     self.tabs.add("Plants")  # Dodaj tab
-    #     self.tabs.add("Pots")
-    #     self.tabs.add("Edit")
-
 
     def makeTabs(self):
 
@@ -59,8 +46,6 @@ class PlantsScreen(ctk.CTkFrame):
 
         self.tabs.add(self.tabPlants, text="PLANTS", image=self.tkimgPlant, compound="left")
         self.tabs.add(self.tabPots, text="POTS", image=self.tkimgPot, compound="left")
-
-
 
     def populatePlantsTab(self):
 
@@ -139,7 +124,7 @@ class PlantsScreen(ctk.CTkFrame):
 
     def populatePotsTab(self):
 
-        lblInstructions = ctk.CTkLabel(self.tabPots, text="Dvoklikom na ime biljke posadite biljku")
+        lblInstructions = ctk.CTkLabel(self.tabPots, text="Dvoklikom na ime biljke posadite biljku u posudu, te klikom na gumb Get info dobijate vrijednosti sa senzora.")
         lblInstructions.pack()
 
         self.plantsList = tk.Listbox(self.tabPots, width=20, height=12, selectmode=tk.SINGLE, bg="#333333", font=("Roboto", 12), fg="white", selectbackground="#106A43")
@@ -156,14 +141,10 @@ class PlantsScreen(ctk.CTkFrame):
         self.btnMovePlant = ctk.CTkButton(self.tabPots, text="Remove plant from pot", command=self.btnBackClick)
         self.btnMovePlant.pack(anchor=tk.S, side=tk.LEFT)
 
-
-
-
-
     def plantingThePlantInPot(self, event):
         plantedPlantName = self.plantsList.get(self.plantsList.curselection())
-        self.plantedPlantDTO = self.plantService.getPlantByName(plantedPlantName)
-        print(self.plantedPlantDTO)
+        self.editPlantDTO = self.plantService.getPlantByName(plantedPlantName)
+        print(self.editPlantDTO)
 
         imgTemp = Image.open("./GUI/img/celsius.png")
         self.imgTemp = ctk.CTkImage(imgTemp)
@@ -179,7 +160,7 @@ class PlantsScreen(ctk.CTkFrame):
         self.potFrame.pack(side=tk.LEFT, expand=True, anchor=tk.S)
 
         # Load the plant image using PIL and create a Tkinter PhotoImage object
-        plant_image = Image.open(self.plantedPlantDTO.photo)
+        plant_image = Image.open(self.editPlantDTO.photo)
         plant_image = plant_image.resize((200, 200))
         plant_photo = ImageTk.PhotoImage(plant_image)
 
@@ -209,43 +190,22 @@ class PlantsScreen(ctk.CTkFrame):
         self.lblAirTempValue = ctk.CTkLabel(self.potFrame, textvariable=self.simNumbers.airTemp)
         self.lblAirTempValue.pack()
 
-    """Edits tab"""
 
     def editPlants(self):
-        # self.tabs.grid_remove()
-        # self.frameEditing = ctk.CTkFrame(self)
-        # self.frameEditing.grid(row=0, column=0, pady=5, padx=5)
+
+        self.plantsList = []  # Inicijalizacija userList
+        self.tkPlant = TkPlant()
+
 
         self.frameEditing = ctk.CTkToplevel(self.master, bd=10)
-
         self.frameEditing.title(f"Plants edit window")
-
 
         self.plantsListName = tk.Listbox(self.frameEditing, width=20, height=12, selectmode=tk.SINGLE, bg="#333333", font=("Roboto", 12), fg="white", selectbackground="#106A43")
         self.plantsListName.grid(row=0, column=0, pady=5, padx=5, sticky=tk.W)
-        self.plantsListName.bind('<<ListboxSelect>>', self.selectPlantFromList)
+        self.plantsListName.bind("<Double-1>", self.selectPlantFromList)
         self.fetchAndSetPlantsList()
 
-        self.plantsEditing = self.plantService.getAllPlants()
-        for plant in self.plantsEditing:
-            self.plantsListName.insert("end", plant.name)
 
-        # lblDescription = ttk.Label(self.lblFrameEditing, text="Description:")
-        # lblDescription.grid(row=1, column=1, pady=5, padx=5)
-
-        self.textPlantDescription = tk.Text(self.frameEditing, width=40, height=20, bg="#333333", font=("Roboto", 12), fg="white", selectbackground="#106A43")
-        self.textPlantDescription.grid(row=0, column=1)
-        self.textPlantDescription.config(state=tk.NORMAL)
-        self.textPlantDescription.insert("1.0", self.tkModelPlant.description.get())
-
-        imgPlant = Image.open(plant.photo)
-        imgPlant = imgPlant.resize((200, 200))
-        self.imgPlant = ImageTk.PhotoImage(imgPlant)
-
-        # Create a label to display the plant image
-        plantImgLbl = ttk.Label(self.frameEditing, image=self.imgPlant, text="")
-        plantImgLbl.image = self.imgPlant
-        plantImgLbl.grid(row=0, column=2, pady=5, padx=5)
 
         lblPlantName = ctk.CTkLabel(self.frameEditing, text="Ime biljke:")
         lblPlantName.grid(row=1, column=0, pady=5, padx=5)
@@ -275,11 +235,13 @@ class PlantsScreen(ctk.CTkFrame):
         imgDel = Image.open("./GUI/img/delete.png")
         imgClose = Image.open("./GUI/img/close.png")
         imgBack = Image.open("./GUI/img/back.png")
+        imgAddimg = Image.open("./GUI/img/add-image.png")
 
         self.tkimgSave = ctk.CTkImage(imgSave)
         self.tkimgDel = ctk.CTkImage(imgDel)
         self.tkimgClose = ctk.CTkImage(imgClose)
         self.tkimgBack = ctk.CTkImage(imgBack)
+        self.tkimgAdd = ctk.CTkImage(imgAddimg)
 
         self.btnSpremi = ctk.CTkButton(self.frameEditing, text="", image=self.tkimgSave, command=self.btnSave)
         self.btnSpremi.grid(row=1, column=2,pady=5, padx=5,sticky=tk.W)
@@ -290,41 +252,31 @@ class PlantsScreen(ctk.CTkFrame):
         self.btnCancle = ctk.CTkButton(self.frameEditing, text="", image=self.tkimgClose, command=self.btnCancleClick)
         self.btnCancle.grid(row=3, column=2, pady=5, padx=5, sticky=tk.W)
 
-        # self.btnBack = ctk.CTkButton(self.frameEditing, text="", image=self.tkimgBack, command=self.btnBackClick)
-        # self.btnBack.grid(row=4, column=2, pady=5, padx=5, sticky=tk.W)
+        self.btnAddImage = ctk.CTkButton(self.frameEditing, text="",image=self.tkimgAdd, command=self.addImage)
+        self.btnAddImage.grid(row=4, column=2, pady=5, padx=5, sticky=tk.W)
 
+    # ova metoda nije zavrsena
+    def addImage(self):
+        # Korisnik odabire sliku iz dijaloškog okvira
+        image_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
 
-        # rbIzmjeni = ttk.Radiobutton(
-        #     self.frameEditing,
-        #     variable=self.tkModelPlant.opcija,
-        #     text="Edit",
-        #     value=1,
-        #     command=self.provjeriAkciju
-        # )
-        # rbIzmjeni.grid(row=4, column=1, pady=10)
-        #
-        # rbUnesi = ttk.Radiobutton(
-        #     self.frameEditing,
-        #     variable=self.tkModelPlant.opcija,
-        #     text="Insert",
-        #     value=2,
-        #     command=self.provjeriAkciju
-        # )
-        # rbUnesi.grid(row=4, column=2, pady=10)
-        #
-        # rbObrisi = ttk.Radiobutton(
-        #     self.frameEditing,
-        #     variable=self.tkModelPlant.opcija,
-        #     text="Delete",
-        #     value=3,
-        #     command=self.provjeriAkciju
-        # )
-        # rbObrisi.grid(row=4, column=3, pady=10)
-        # self.tkModelPlant.opcija.set(1)
+        if image_path:
+            # Učitajte sliku pomoću PIL-a i stvorite objekt ImageTk.PhotoImage
+            plant_image = Image.open(image_path)
+            plant_image = plant_image.resize((200, 200))
+            plant_photo = ImageTk.PhotoImage(plant_image)
+
+            # Ažurirajte sliku na etiketi
+            self.imgPlant.configure(image=plant_photo)
+            self.imgPlant.image = plant_photo
+
+            # Spremite putanju do slike u svojstvo tkModelPlant.photo
+            self.tkModelPlant.photo = image_path
+
 
     def btnSave(self):
         plantDto = PlantDTO.createFromTkModel(self.tkModelPlant)
-        self.plantService.addOrUpdatePlant(plantDto)
+        self.plantService.updatePlant(plantDto)
         self.fetchAndSetPlantsList()
 
     def btnDeletePlant(self):
@@ -333,6 +285,10 @@ class PlantsScreen(ctk.CTkFrame):
         self.fetchAndSetPlantsList()
 
     def btnCancleClick(self):
+        # self.entryPlantName.delete(0, 'end')
+        # self.entryPlantDescription.delete(0, 'end')
+        # self.photoPath = None
+        # self.imagePreview.config(image=None)
         self.tkModelPlant.clear()
 
     def btnBackClick(self):
@@ -353,73 +309,39 @@ class PlantsScreen(ctk.CTkFrame):
             self.plantsListName.config(listvariable=self.tkPlantList)
 
     def selectPlantFromList(self, event):
-        selectedIndex = event.widget.curselection()
-        if selectedIndex:
-            plantDto: PlantDTO = self.plantList[selectedIndex[0]]
-            print(plantDto)
-            self.tkModelPlant.fillFromDto(plantDto)
+        selectedPlantIndex = self.plantsListName.curselection()
+        if selectedPlantIndex:
+            selectedIndex = selectedPlantIndex[0]
+            selectedPlantName = self.plantsListName.get(selectedIndex)
+            self.editedPlantDTO = self.plantService.getPlantByName(selectedPlantName)
+            if self.editedPlantDTO is not None:
+                self.tkModelPlant.fillFromDto(self.editedPlantDTO)
+                self.selectedPhotoPath = self.editedPlantDTO.photo
+                self.selectedPlantDescription = self.editedPlantDTO.description
 
+                # Prikazivanje slike
+                self.showPlantImage(self.selectedPhotoPath)
 
+                # Prikazivanje opisa
 
-    # def editngPlants(self, event):
-    #     editedPlantName = self.plantsListName.get(self.plantsListName.curselection())
-    #     self.editedPlantDTO = self.plantService.getPlantByName(editedPlantName)
-    #     if self.editedPlantDTO is not None:
-    #         self.tkModelPlant.name.set(self.editedPlantDTO.name)
-    #         self.tkModelPlant.description.set(self.editedPlantDTO.description)
-    #         self.tkModelPlant.zalijevanje.set(self.editedPlantDTO.zalijevanje)
-    #         self.tkModelPlant.osvjetljenje.set(self.editedPlantDTO.osvjetljenje)
-    #         self.tkModelPlant.toplina.set(self.editedPlantDTO.toplina)
-    #         self.tkModelPlant.dohrana.set(self.editedPlantDTO.dohrana)
-    #     print(self.editedPlantDTO)
+                self.showPlantDescription(self.selectedPlantDescription)
 
+    def showPlantImage(self, photo):
 
-    # def provjeriAkciju(self):
-    #     match(self.tkModelPlant.opcija.get()):
-    #         case 1:
-    #             self.frameEditing.config(text="Edit Plant")
-    #             self.btnSpremi.config(text="Save Changes")
-    #         case 2:
-    #             self.frameEditing.config(text="Insert Plant")
-    #             self.btnSpremi.config(text="Insert Plant")
-    #         case 3:
-    #             self.frameEditing.config(text="Delete Plant")
-    #             self.btnSpremi.config(text="Delete Plant")
+        imgPlant = Image.open(photo)
+        imgPlant = imgPlant.resize((200, 200))
+        photoImg = ImageTk.PhotoImage(imgPlant)
 
-    # def saveChangees(self):
-    #     match (self.tkModelPlant.opcija.get()):
-    #         case 1:
-    #             dto = PlantDTO(id=self.editedPlantDTO.id,
-    #                             name=self.tkModelPlant.name.get(),
-    #                             photo=self.editedPlantDTO.photo,
-    #                             description=self.textPlantDescription.get("1.0", tk.END),
-    #                             zalijevanje=self.tkModelPlant.zalijevanje.get(),
-    #                             osvjetljenje=self.tkModelPlant.osvjetljenje.get(),
-    #                             toplina=self.tkModelPlant.toplina.get(),
-    #                             dohrana=self.editedPlantDTO.dohrana)
-    #             self.plantService.updatePlant(dto)
-    #         case 2:
-    #             self.plantService.createPlant(
-    #                 self.tkModelPlant.name.get(),
-    #                 None,
-    #                 self.textPlantDescription.get("1.0", tk.END),
-    #                 self.tkModelPlant.zalijevanje.get(),
-    #                 self.tkModelPlant.osvjetljenje.get(),
-    #                 self.tkModelPlant.toplina.get(),
-    #                 self.tkModelPlant.dohrana.get()
-    #
-    #             )
-    #         case 3:
-    #             dto = PlantDTO(id=self.editedPlantDTO.id,
-    #                             name=self.tkModelPlant.name.get(),
-    #                             photo=self.editedPlantDTO.photo,
-    #                             description=self.textPlantDescription.get("1.0", tk.END),
-    #                             zalijevanje=self.tkModelPlant.zalijevanje.get(),
-    #                             osvjetljenje=self.tkModelPlant.osvjetljenje.get(),
-    #                             toplina=self.tkModelPlant.toplina.get(),
-    #                             dohrana=self.editedPlantDTO.dohrana)
-    #             self.plantService.deleteplant(dto)
+        self.plantImageLabel = tk.Label(self.frameEditing, image=photoImg)
+        self.plantImageLabel.image = photoImg
+        self.plantImageLabel.grid(row=0, column=2, pady=5, padx=5)
 
+    def showPlantDescription(self, description):
+        self.textPlantDescription = tk.Text(self.frameEditing, width=40, height=20, bg="#333333", font=("Roboto", 12),
+                                            fg="white", selectbackground="#106A43")
+        self.textPlantDescription.grid(row=0, column=1)
+        self.textPlantDescription.config(state=tk.NORMAL)
+        self.textPlantDescription.insert("1.0", description)
 
     def simulateNumbers(self):
         mylist = ["Sjenovito", "Jarko"]

@@ -19,6 +19,7 @@ class App(CTk):
         self.geometry("1000x600")
         self.service = service
         self.plantService = plantService
+        self.tkUser = TkUser
         self._createScreen()
 
     def _createScreen(self):
