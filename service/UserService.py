@@ -34,9 +34,9 @@ class UserService:
 
 #     pomocna funkcija za ubacivanje par korisnika
     def _createUsers(self):
-        self.addUser("jasmin", "bilic", "jbilic01", "0000", True)
+        self.addUser("Jasmin", "Bilic", "jbilic01", "0000", True)
         self.addUser("Pero", "Peric", "pperic01", "1111", False)
-        self.addUser("Ivo", "ivic", "iivic01", "2222", False)
+        self.addUser("Ivo", "Ivic", "iivic01", "2222", False)
         self.addUser("Marko", "Anic", "manic01", "3333", False)
         self.addUser("Frane", "Maric", "fmaric01", "4444", False)
 

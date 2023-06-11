@@ -19,12 +19,12 @@ ctk.set_default_color_theme("green")
 
 class LoginScreen(ctk.CTkFrame):
 
-    def __init__(self, parent, service: UserService, plantService: PlantService):
+    def __init__(self, parent, service: UserService, tkUser: TkUser, plantService: PlantService):
         super().__init__(master=parent)
         self.grid()
         self.service = service
         self.plantService = plantService
-        self.tkUser = TkUser()
+        self.tkUser = tkUser
         self.userDto = UserDto()
         self['relief'] = tk.RAISED
         self['borderwidth'] = 15
