@@ -1,6 +1,6 @@
 from tkinter import StringVar, BooleanVar, IntVar
 from datasource.dto.PlantDto import PlantDTO
-from PIL import Image
+
 
 class TkPlant:
 

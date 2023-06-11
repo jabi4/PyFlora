@@ -24,9 +24,6 @@ class MainScreen(ctk.CTkFrame):
 
 
     def userInfoDisplay(self):
-
-
-
         self.userInfo = ctk.CTkFrame(self.master)
         self.userInfo.grid(row=0, column=0, pady=5, padx=5)
 
@@ -50,7 +47,3 @@ class MainScreen(ctk.CTkFrame):
         self.userLastname.config(text=self.tkUser.surname.get())
 
 
-# screen = MainScreen()
-# screen.tkUser.name.set("Novo ime")
-# screen.tkUser.surname.set("Novo prezime")
-# screen.updateUserInfo()

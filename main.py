@@ -1,13 +1,8 @@
 import sqlite3
-import tkinter
-from tkinter import Tk
 from customtkinter import CTk
-
-from GUI.screens.LoginScreen import LoginScreen
 from GUI.screens.MainScreen import MainScreen
 from service.UserService import UserService
 from datasource.tk.TKUser import TkUser
-from datasource.dto.UserDto import UserDto
 from service.PlantService import PlantService
 
 
