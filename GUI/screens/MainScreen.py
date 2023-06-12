@@ -18,9 +18,11 @@ class MainScreen(ctk.CTkFrame):
         self.createLoginScreen()
         self.userInfoDisplay()
 
+
     def createLoginScreen(self):
         logScreen = LoginScreen(self, self.service, self.tkUser, self.plantService)
         logScreen.grid()
+
 
 
     def userInfoDisplay(self):
@@ -42,8 +44,5 @@ class MainScreen(ctk.CTkFrame):
         self.userLastname = ctk.CTkLabel(self.userInfo, textvariable=self.tkUser.surname)
         self.userLastname.grid(row=2, column=0, pady=5, padx=5)
 
-    def updateUserInfo(self):
-        self.username.config(text=self.tkUser.name.get())
-        self.userLastname.config(text=self.tkUser.surname.get())
 
 
